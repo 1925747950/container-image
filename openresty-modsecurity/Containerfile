@@ -163,7 +163,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
         ${RESTY_ADD_PACKAGE_BUILDDEPS} \
         ${RESTY_ADD_PACKAGE_RUNDEPS} \
     && cd /tmp \
-    && export https_proxy=http://10.0.12.63:10809 http_proxy=http://10.0.12.63:10809 all_proxy=socks5://10.0.12.63:10808 \
     && curl -fSL "${MOD_SECURITY_URL_BASE}/modsecurity-v${MOD_SECURITY_VERSION}.tar.gz" -o modsecurity-v${MOD_SECURITY_VERSION}.tar.gz \ 
     && tar -zxf modsecurity-v${MOD_SECURITY_VERSION}.tar.gz \
     && cd modsecurity-v${MOD_SECURITY_VERSION} \
