@@ -223,7 +223,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     && sed -i 's#<hr><center>openresty</center>#<hr><center>loveyou3000</center>#' bundle/nginx-1.27.1/src/http/ngx_http_special_response.c \
     && sed -i 's/Server: openresty/Server: loveyou3000/' bundle/nginx-1.27.1/src/http/ngx_http_header_filter_module.c \
     && if [ -n "${RESTY_EVAL_POST_DOWNLOAD_PRE_CONFIGURE}" ]; then eval $(echo ${RESTY_EVAL_POST_DOWNLOAD_PRE_CONFIGURE}); fi \
-    && eval ./configure -j${RESTY_J} ${_RESTY_CONFIG_DEPS} ${RESTY_CONFIG_OPTIONS} ${RESTY_CONFIG_OPTIONS_MORE} ${RESTY_LUAJIT_OPTIONS} ${RESTY_PCRE_OPTIONS} ${MOD_SECURITY_NGINX_MODULE_OPTIONS} ${RESTY_HEALTHCHECK_MODULE_OPTIONS}\
+    && eval ./configure -j${RESTY_J} ${_RESTY_CONFIG_DEPS} ${RESTY_CONFIG_OPTIONS} ${RESTY_CONFIG_OPTIONS_MORE} ${RESTY_LUAJIT_OPTIONS} ${RESTY_PCRE_OPTIONS} ${MOD_SECURITY_NGINX_MODULE_OPTIONS} ${RESTY_HEALTHCHECK_MODULE_OPTIONS} \
     # && eval ./configure -j${RESTY_J} ${_RESTY_CONFIG_DEPS} ${RESTY_CONFIG_OPTIONS} ${RESTY_CONFIG_OPTIONS_MORE} ${RESTY_LUAJIT_OPTIONS} ${RESTY_PCRE_OPTIONS} ${RESTY_HEALTHCHECK_MODULE_OPTIONS} \
     && make -j${RESTY_J} \
     && make -j${RESTY_J} install \
