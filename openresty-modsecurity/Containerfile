@@ -244,7 +244,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     && cp -p coreruleset-${MOD_CORERULESET_VERSION}/crs-setup.conf.example /usr/local/openresty/nginx/conf/modsecurity/crs-setup.conf \
     && cp -rp coreruleset-${MOD_CORERULESET_VERSION}/rules /usr/local/openresty/nginx/conf/modsecurity/ \
     && sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /usr/local/openresty/nginx/conf/modsecurity/modsecurity.conf \
-    && echo -e "Include crs-setup.conf\nInclude rules/*.conf" >> /usr/local/openresty/nginx/conf/modsecurity/modsecurity.conf \
+    && echo "Include crs-setup.conf" >> /usr/local/openresty/nginx/conf/modsecurity/modsecurity.conf \
+    && echo "Include rules/*.conf" >> /usr/local/openresty/nginx/conf/modsecurity/modsecurity.conf \
     && rm -rf \
         openssl-${RESTY_OPENSSL_VERSION}.tar.gz openssl-${RESTY_OPENSSL_VERSION} \
         pcre2-${RESTY_PCRE_VERSION}.tar.gz pcre2-${RESTY_PCRE_VERSION} \
