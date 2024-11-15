@@ -1,0 +1,92 @@
+name: 构建并推送 openresty-modsecurity 镜像
+
+on:
+  push:
+    paths:
+      - 'openresty-modsecurity/**'
+      - '.github/workflows/openresty-modsecurity.yml'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: 设置 Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 登录到阿里云容器镜像服务
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ALIYUN_ACR_REGISTRY }}
+          username: ${{ secrets.ALIYUN_ACR_USERNAME }}
+          password: ${{ secrets.ALIYUN_ACR_PASSWORD }}
+
+      - name: 生成镜像标签
+        id: tag
+        run: |
+          echo "TAG=$(date +%Y%m%d%H%M%S)-${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+
+      - name: 构建并推送镜像
+        id: docker_build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./openresty-modsecurity
+          file: ./openresty-modsecurity/Containerfile
+          push: true
+          tags: |
+            ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/openresty-modsecurity:${{ steps.tag.outputs.TAG }}
+            ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/openresty-modsecurity:latest
+          cache-from: type=registry,ref=${{ secrets.ALIYUN_ACR_REGISTRY }}/base/openresty-modsecurity:latest
+          cache-to: type=inline
+
+      - name: 输出镜像地址
+        run: |
+          echo "镜像已成功构建并推送到："
+          echo "特定版本: ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/openresty-modsecurity:${{ steps.tag.outputs.TAG }}"
+          echo "最新版本: ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/openresty-modsecurity:latest"
+
+      - name: 验证镜像是否存在
+        run: |
+          docker pull ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/openresty-modsecurity:${{ steps.tag.outputs.TAG }}
+        continue-on-error: true
+
+      - name: 重新登录到阿里云容器镜像服务
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ALIYUN_ACR_REGISTRY }}
+          username: ${{ secrets.ALIYUN_ACR_USERNAME }}
+          password: ${{ secrets.ALIYUN_ACR_PASSWORD }}
+
+      - name: 运行 Trivy 漏洞扫描
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: '${{ secrets.ALIYUN_ACR_REGISTRY }}/base/openresty-modsecurity:${{ steps.tag.outputs.TAG }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          timeout: '15m'
+        env:
+          TRIVY_USERNAME: ${{ secrets.ALIYUN_ACR_USERNAME }}
+          TRIVY_PASSWORD: ${{ secrets.ALIYUN_ACR_PASSWORD }}
+
+      - name: 创建 GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.TAG }}
+          release_name: Release ${{ steps.tag.outputs.TAG }}
+          body: |
+            新的 openresty modsecurity 镜像已构建并推送。
+            
+            特定版本镜像地址：${{ secrets.ALIYUN_ACR_REGISTRY }}/base/openresty-modsecurity:${{ steps.tag.outputs.TAG }}
+            最新版本镜像地址：${{ secrets.ALIYUN_ACR_REGISTRY }}/base/openresty-modsecurity:latest
+          draft: false
+          prerelease: false
