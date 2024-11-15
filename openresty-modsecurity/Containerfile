@@ -233,10 +233,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     && cp -p modsecurity-v${MOD_SECURITY_VERSION}/unicode.mapping /usr/local/openresty/nginx/conf/modsecurity/unicode.mapping \
     && curl -fSL "${MOD_CORERULESET_URL_BASE}/coreruleset-${MOD_CORERULESET_VERSION}-minimal.tar.gz" -o coreruleset-${MOD_CORERULESET_VERSION}-minimal.tar.gz \
     && tar -zxf coreruleset-${MOD_CORERULESET_VERSION}-minimal.tar.gz \
-    && cp -p coreruleset-${MOD_CORERULESET_VERSION}/crs-setup.conf.example /usr/local/openresty/nginx/conf/modsecurity/crs-setup.conf \
-    && cp -p coreruleset-${MOD_CORERULESET_VERSION}/rules /usr/local/openresty/nginx/conf/modsecurity/ \
     && mv coreruleset-${MOD_CORERULESET_VERSION}/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf{.example,} \
     && mv coreruleset-${MOD_CORERULESET_VERSION}/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf{.example,} \
+    && cp -p coreruleset-${MOD_CORERULESET_VERSION}/crs-setup.conf.example /usr/local/openresty/nginx/conf/modsecurity/crs-setup.conf \
+    && cp -rp coreruleset-${MOD_CORERULESET_VERSION}/rules /usr/local/openresty/nginx/conf/modsecurity/ \
     && sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /usr/local/openresty/nginx/conf/modsecurity/modsecurity.conf \
     && echo -e "Include crs-setup.conf\nInclude rules/*.conf" >> /usr/local/openresty/nginx/conf/modsecurity/modsecurity.conf \
     && rm -rf \
