@@ -233,8 +233,14 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     && cp -p modsecurity-v${MOD_SECURITY_VERSION}/unicode.mapping /usr/local/openresty/nginx/conf/modsecurity/unicode.mapping \
     && curl -fSL "${MOD_CORERULESET_URL_BASE}/coreruleset-${MOD_CORERULESET_VERSION}-minimal.tar.gz" -o coreruleset-${MOD_CORERULESET_VERSION}-minimal.tar.gz \
     && tar -zxf coreruleset-${MOD_CORERULESET_VERSION}-minimal.tar.gz \
-    && mv coreruleset-${MOD_CORERULESET_VERSION}/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf{.example,} \
-    && mv coreruleset-${MOD_CORERULESET_VERSION}/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf{.example,} \
+    && if [ -f "coreruleset-${MOD_CORERULESET_VERSION}/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf.example" ]; then \
+        mv "coreruleset-${MOD_CORERULESET_VERSION}/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf.example" \
+        "coreruleset-${MOD_CORERULESET_VERSION}/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf"; \
+    fi \
+    && if [ -f "coreruleset-${MOD_CORERULESET_VERSION}/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf.example" ]; then \
+        mv "coreruleset-${MOD_CORERULESET_VERSION}/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf.example" \
+        "coreruleset-${MOD_CORERULESET_VERSION}/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf"; \
+    fi \
     && cp -p coreruleset-${MOD_CORERULESET_VERSION}/crs-setup.conf.example /usr/local/openresty/nginx/conf/modsecurity/crs-setup.conf \
     && cp -rp coreruleset-${MOD_CORERULESET_VERSION}/rules /usr/local/openresty/nginx/conf/modsecurity/ \
     && sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /usr/local/openresty/nginx/conf/modsecurity/modsecurity.conf \
@@ -260,7 +266,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     && rm -rf luarocks-${RESTY_LUAROCKS_VERSION} luarocks-${RESTY_LUAROCKS_VERSION}.tar.gz ngx_healthcheck_module-master ngx_healthcheck_module.zip \
     && if [ -n "${RESTY_ADD_PACKAGE_BUILDDEPS}" ]; then DEBIAN_FRONTEND=noninteractive apt-get remove -y --purge ${RESTY_ADD_PACKAGE_BUILDDEPS} ; fi \
     && DEBIAN_FRONTEND=noninteractive apt-get autoremove -y \
-    && mkdir -p /var/run/openresty \
+    && mkdir -p /var/run/openresty /etc/nginx/conf.d/ \
     && ln -sf /dev/stdout /usr/local/openresty/nginx/logs/access.log \
     && ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log
 
