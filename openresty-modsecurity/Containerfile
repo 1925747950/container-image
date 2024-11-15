@@ -85,7 +85,7 @@ ARG RESTY_CONFIG_OPTIONS="\
 ARG RESTY_CONFIG_OPTIONS_MORE=""
 ARG RESTY_LUAJIT_OPTIONS="--with-luajit-xcflags='-DLUAJIT_NUMMODE=2 -DLUAJIT_ENABLE_LUA52COMPAT'"
 ARG RESTY_PCRE_OPTIONS="--with-pcre-jit"
-# ARG RESTY_HEALTHCHECK_MODULE_OPTIONS="--add-module=/tmp/ngx_healthcheck_module-master"
+ARG RESTY_HEALTHCHECK_MODULE_OPTIONS="--add-module=/tmp/ngx_healthcheck_module-master"
 ARG MOD_SECURITY_NGINX_MODULE_OPTIONS="--add-module=/tmp/modSecurity-nginx-v${MOD_SECURITY_NGINX_VERSION}"
 
 ARG RESTY_ADD_PACKAGE_BUILDDEPS="git"
@@ -121,7 +121,7 @@ LABEL resty_eval_post_download_pre_configure="${RESTY_EVAL_POST_DOWNLOAD_PRE_CON
 LABEL resty_eval_post_make="${RESTY_EVAL_POST_MAKE}"
 LABEL resty_luajit_options="${RESTY_LUAJIT_OPTIONS}"
 LABEL resty_pcre_options="${RESTY_PCRE_OPTIONS}"
-# LABEL resty_healthcheck_module_options="${RESTY_HEALTHCHECK_MODULE_OPTIONS}"
+LABEL resty_healthcheck_module_options="${RESTY_HEALTHCHECK_MODULE_OPTIONS}"
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -163,7 +163,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
         ${RESTY_ADD_PACKAGE_BUILDDEPS} \
         ${RESTY_ADD_PACKAGE_RUNDEPS} \
     && cd /tmp \
-    && curl -fSL "${MOD_SECURITY_URL_BASE}/modsecurity-v${MOD_SECURITY_VERSION}.tar.gz" -o modsecurity-v${MOD_SECURITY_VERSION}.tar.gz \ 
+    && curl -fSL "${MOD_SECURITY_URL_BASE}/modsecurity-v${MOD_SECURITY_VERSION}.tar.gz" -o modsecurity-v${MOD_SECURITY_VERSION}.tar.gz \
     && tar -zxf modsecurity-v${MOD_SECURITY_VERSION}.tar.gz \
     && cd modsecurity-v${MOD_SECURITY_VERSION} \
     && ./build.sh \
@@ -212,10 +212,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     && cd /tmp \
     && curl -fSL https://openresty.org/download/openresty-${RESTY_VERSION}.tar.gz -o openresty-${RESTY_VERSION}.tar.gz \
     && tar xzf openresty-${RESTY_VERSION}.tar.gz \
-    # && curl -fSL https://github.com/zhouchangxun/ngx_healthcheck_module/archive/refs/heads/master.zip -o ngx_healthcheck_module.zip \
-    # && unzip ngx_healthcheck_module.zip \
-    # && cd /tmp/openresty-${RESTY_VERSION}/bundle/nginx-1.27.1 \
-    # && patch -p1 < /tmp/ngx_healthcheck_module-master/nginx_healthcheck_for_nginx_1.19+.patch \
+    && curl -fSL https://github.com/zhouchangxun/ngx_healthcheck_module/archive/refs/heads/master.zip -o ngx_healthcheck_module.zip \
+    && unzip ngx_healthcheck_module.zip \
+    && cd /tmp/openresty-${RESTY_VERSION}/bundle/nginx-1.27.1 \
+    && patch -p1 < /tmp/ngx_healthcheck_module-master/nginx_healthcheck_for_nginx_1.19+.patch \
     && cd /tmp/openresty-${RESTY_VERSION} \
     && sed -ri '/^#define NGINX_VER/s/".*"/"loveyou3000\/"/' bundle/nginx-1.27.1/src/core/nginx.h \
     && sed -ri '/^#define NGINX_VAR/s/".*"/"LOVEYOU"/' bundle/nginx-1.27.1/src/core/nginx.h \
@@ -223,7 +223,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     && sed -i 's#<hr><center>openresty</center>#<hr><center>loveyou3000</center>#' bundle/nginx-1.27.1/src/http/ngx_http_special_response.c \
     && sed -i 's/Server: openresty/Server: loveyou3000/' bundle/nginx-1.27.1/src/http/ngx_http_header_filter_module.c \
     && if [ -n "${RESTY_EVAL_POST_DOWNLOAD_PRE_CONFIGURE}" ]; then eval $(echo ${RESTY_EVAL_POST_DOWNLOAD_PRE_CONFIGURE}); fi \
-    && eval ./configure -j${RESTY_J} ${_RESTY_CONFIG_DEPS} ${RESTY_CONFIG_OPTIONS} ${RESTY_CONFIG_OPTIONS_MORE} ${RESTY_LUAJIT_OPTIONS} ${RESTY_PCRE_OPTIONS} ${MOD_SECURITY_NGINX_MODULE_OPTIONS}\
+    && eval ./configure -j${RESTY_J} ${_RESTY_CONFIG_DEPS} ${RESTY_CONFIG_OPTIONS} ${RESTY_CONFIG_OPTIONS_MORE} ${RESTY_LUAJIT_OPTIONS} ${RESTY_PCRE_OPTIONS} ${MOD_SECURITY_NGINX_MODULE_OPTIONS} ${RESTY_HEALTHCHECK_MODULE_OPTIONS}\
     # && eval ./configure -j${RESTY_J} ${_RESTY_CONFIG_DEPS} ${RESTY_CONFIG_OPTIONS} ${RESTY_CONFIG_OPTIONS_MORE} ${RESTY_LUAJIT_OPTIONS} ${RESTY_PCRE_OPTIONS} ${RESTY_HEALTHCHECK_MODULE_OPTIONS} \
     && make -j${RESTY_J} \
     && make -j${RESTY_J} install \
