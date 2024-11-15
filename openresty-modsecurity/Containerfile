@@ -22,7 +22,7 @@ ARG MOD_SECURITY_NGINX_URL_BASE="https://github.com/owasp-modsecurity/ModSecurit
 
 # https://github.com/coreruleset/coreruleset/releases
 ARG MOD_CORERULESET_VERSION="4.8.0"
-ARG MOD_CORERULESET_URL_BASE="https://github.com/coreruleset/coreruleset/releases/download/v${MOD_SECURITY_CRS_VERSION}"
+ARG MOD_CORERULESET_URL_BASE="https://github.com/coreruleset/coreruleset/releases/download/v${MOD_CORERULESET_VERSION}"
 
 # https://github.com/openresty/openresty-packaging/blob/master/deb/openresty-openssl3/debian/rules
 ARG RESTY_OPENSSL_VERSION="3.0.15"
