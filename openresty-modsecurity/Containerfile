@@ -219,7 +219,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
     && make -j${RESTY_J} \
     && make -j${RESTY_J} install \
     && cd /tmp \
-    && mkdir /etc/nginx/modsecurity \
+    && mkdir -p /etc/nginx/modsecurity \
     && cp -p modsecurity-v${MOD_SECURITY_VERSION}/modsecurity.conf-recommended /etc/nginx/modsecurity/modsecurity.conf \
     && cp -p modsecurity-v${MOD_SECURITY_VERSION}/unicode.mapping /etc/nginx/modsecurity/unicode.mapping \
     && curl -fSL "${MOD_CORERULESET_URL_BASE}/coreruleset-${MOD_CORERULESET_VERSION}-minimal.tar.gz" -o coreruleset-${MOD_CORERULESET_VERSION}-minimal.tar.gz \
